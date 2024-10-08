@@ -1,0 +1,25 @@
+Description of my project.
+
+My project is a word guessing game where players try to guess a hidden word letter by letter. Players have a limited number of guesses, and they can see how close they are to the correct word.
+What purpose does it serve (artistic, functional, exploratory, entertainment, etc.)?
+
+How will users interface with it?
+
+Users interact with the word guessing game through a command-line interface. Basically I'll use the console as a way to interact with the user. For example, I could ask a question and if you typed a certain number a specific response would be then sent out to console (so something like that). The UI will allow the user to be able to see the current state of teh word, make guesses, and receive feedback on their progress.
+
+The language, libraries, and any other tools I will use.
+
+For tools, I'll manipulate strings and characters and make sure to use a combo of arrays and sets to track the words. For the guesses, I'll try to use a tool that has the word be random, hopefully from a set of a lot of words (I can always make my own if all else fails).
+
+What will a successful project look like?
+
+A successful project will include the following 8 things (and hopefully more good things):
+
+1. A word selection system (randomly chosen from a very long list)
+2. Display of the latest word's current state (revealed letters and blanks)
+3. Guess input and validation
+4. Tracking of correct and incorrect guesses
+5. Game over conditions (either the user has successfully guessed the word OR the user has ran out of guesses)
+6. Basic scoring system
+7. Option to play multiple rounds in 1 go (without having to run the cde too many times)
+8. Clear, commented, and concise code.
