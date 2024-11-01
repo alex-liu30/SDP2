@@ -1,0 +1,162 @@
+import Foundation
+
+enum Species: String, CaseIterable {
+    case herbivore, carnivore, omnivore
+}
+
+enum Terrain: String, CaseIterable {
+    case plains, forest, mountain, desert
+}
+
+protocol Genetic {
+    var genes: [String: Double] { get set }
+    mutating func mutate()
+}
+
+protocol Simulatable {
+    func update(in environment: Environment) -> (updatedOrganism: Organism, environmentChanges: EnvironmentChanges)
+}
+
+
+struct EnvironmentChanges {
+    var organismsToRemove: [UUID] = []
+    var energyChange: Double = 0
+}
+
+struct Environment {
+    var terrain: Terrain
+    var foodAvailability: Double
+    var temperature: Double
+    var organisms: [Organism]
+}
+
+struct Organism: Genetic, Simulatable, Identifiable {
+    var id: UUID  
+    let species: Species
+    var genes: [String: Double]
+    var energy: Double
+    var position: (x: Int, y: Int)
+    
+    mutating func mutate() {
+        for key in genes.keys {
+            if Double.random(in: 0...1) < 0.1 {
+                genes[key]? += Double.random(in: -0.1...0.1)
+            }
+        }
+    }
+    
+    func update(in environment: Environment) -> (updatedOrganism: Organism, environmentChanges: EnvironmentChanges) {
+        var updatedOrganism = self
+        var changes = EnvironmentChanges()
+        
+        switch species {
+        case .herbivore:
+            updatedOrganism.energy += environment.foodAvailability * genes["size"]! * 0.1
+        case .carnivore:
+            if let prey = environment.organisms.first(where: { $0.species != .carnivore && $0.position == self.position }) {
+                updatedOrganism.energy += prey.energy * 0.5
+                changes.organismsToRemove.append(prey.id)
+            }
+        case .omnivore:
+            updatedOrganism.energy += environment.foodAvailability * genes["size"]! * 0.05
+            if let prey = environment.organisms.first(where: { $0.species == .herbivore && $0.position == self.position }) {
+                updatedOrganism.energy += prey.energy * 0.3
+                changes.organismsToRemove.append(prey.id)
+            }
+        }
+        
+    
+        updatedOrganism.position.x = (updatedOrganism.position.x + Int.random(in: -1...1) + 100) % 100
+        updatedOrganism.position.y = (updatedOrganism.position.y + Int.random(in: -1...1) + 100) % 100
+        
+       
+        updatedOrganism.energy -= genes["size"]! * 0.1
+        
+        return (updatedOrganism, changes)
+    }
+}
+
+class Simulation {
+    var environment: Environment
+    var generation: Int = 0
+    
+    init(size: Int, initialPopulation: Int) {
+        self.environment = Environment(
+            terrain: .plains,
+            foodAvailability: 1.0,
+            temperature: 20.0,
+            organisms: []
+        )
+        
+        for _ in 0..<initialPopulation {
+            let organism = Organism(
+                id: UUID(),
+                species: Species.allCases.randomElement()!,
+                genes: ["size": Double.random(in: 0.5...1.5),
+                        "speed": Double.random(in: 0.5...1.5),
+                        "senseRange": Double.random(in: 0.5...1.5)],
+                energy: 100.0,
+                position: (x: Int.random(in: 0..<size), y: Int.random(in: 0..<size))
+            )
+            environment.organisms.append(organism)
+        }
+    }
+    
+    func run(generations: Int) {
+        for _ in 0..<generations {
+            step()
+        }
+    }
+    
+    func step() {
+        var updatedOrganisms: [Organism] = []
+        var organismsToRemove: Set<UUID> = []
+        
+        for organism in environment.organisms {
+            let (updatedOrganism, changes) = organism.update(in: environment)
+            updatedOrganisms.append(updatedOrganism)
+            organismsToRemove.formUnion(changes.organismsToRemove)
+        }
+        
+        // Following removes dead organisms and those that were eaten; ultimately lowers number of herbivores as they're eaten by carnivore.
+        updatedOrganisms = updatedOrganisms.filter { $0.energy > 0 && !organismsToRemove.contains($0.id) }
+        
+        // Handling th reproduction
+        let newOrganisms = updatedOrganisms.flatMap { parent -> [Organism] in
+            if parent.energy > 150 {
+                var child = parent
+                child.id = UUID()  
+                child.energy = 100
+                child.mutate()
+                return [parent, child]
+            }
+            return [parent]
+        }
+        
+        environment.organisms = newOrganisms
+        
+        // Adjusting teh food availability
+        environment.foodAvailability = min(1.0, environment.foodAvailability + 0.1)
+        
+        generation += 1
+        
+        // Print stats
+        printStatistics()
+    }
+    
+    func printStatistics() {
+        let counts = Dictionary(grouping: environment.organisms, by: { $0.species })
+            .mapValues { $0.count }
+        print("Generation \(generation):")
+        for species in Species.allCases {
+            print("\(species.rawValue): \(counts[species] ?? 0)")
+        }
+        print("Total population: \(environment.organisms.count)")
+        print("Food availability: \(environment.foodAvailability)")
+        print("---")
+    }
+}
+
+
+let simulation = Simulation(size: 100, initialPopulation: 1000)
+simulation.run(generations: 100)
