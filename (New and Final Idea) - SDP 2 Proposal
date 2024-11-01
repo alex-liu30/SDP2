@@ -1,1 +1,33 @@
 @mrjoswald
+
+import Foundation
+
+A description of your project.
+
+My project is a ecoystem simulation that models the interactions between different organisms in a virtual environment. The simulation includes herbivores, carnivores, and omnivores, each with unique characteristics and begaviors. The organisms interact with their environment (age) and each other, with wild cards like reproducing and the evolution across 50 generations (and even more!). My simulation also factors in energy levels, food availability (constant to remain unchanged in code), population dynamics, and size. 
+
+What purpose does it serve (artistic, functional, exploratory, entertainment, etc.)?
+
+My project's purpose is to be an exploration and an educational tool for the user; I made it so that it very clearly and simply shows how different types of animals in ecosystems inetract with one another in general. I've attempted to give it that real-world feel, where such simulation is in fact an accurate representation of what actually goes in the real world. 
+
+
+How will users interface with it?
+
+Just a run button and scrolling as the code ends up detailing 50 generations. You'll notice that if you keep running the code, the numbers of the herbivores, carnivores, etc will change every time it's run, and so you get that fresh new experience every time you run it. Also, you could for sure modify the initial parameters of the simulation, like the number of generations running or how the organisms interact with each other.
+
+The language, libraries, and any other tools you will use.
+
+Language: Swift
+
+Standard Library: Foundation (normal)
+
+Console: The code should work on any console, though there may be copy and paste issues (from GitHub) as I directly copy and pasted from an online swift console in which I write my code on because it's the best place to do it for me. 
+
+What will a successful project look like?
+1. Stable and consistent running of the simulation after being run multiple times without any crashes; there may be a lot of code being used and returned so there may be some lag. Therefore, if I make the code more concise it may reduce lag, something of which signals to me that the project has been successfully implemented
+2. Observable changes in populations over time based on interactions between different animals
+3. Proper implementation of genetic traits and mutation (more wild cards!)
+4. Balanced ecosystem dynamics across generations and different times of running the code
+5. Clear display on console for user to see
+6. Flexibility to edit code; maybe user or dev (me) will like to adjust the parameters of the code to observe different outcomes.
+
